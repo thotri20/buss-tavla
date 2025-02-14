@@ -11,6 +11,12 @@ interface Departure {
     line?: {
       publicCode?: string;
     };
+    from?: {
+      stopPlace: { name: string };
+    };
+    to?: {
+      stopPlace: { name: string };
+    };
   };
 }
 
@@ -27,7 +33,8 @@ const Tavle = () => {
         setLoading(true);
         setError(null);
 
-        const data = await fetchDepartures("58225");
+        // Fetch departures for Hamar (StopPlace ID: 10692)
+        const data = await fetchDepartures("10692");
 
         console.log("Fetched data:", data); // Debug API-data
 
@@ -84,14 +91,27 @@ const Tavle = () => {
                 )
               : "Ugyldig tid";
 
+            // Håndter manglende data for fra og til
+            const from =
+              dep.serviceJourney?.from?.stopPlace.name ||
+              "Data ikke tilgjengelig";
+            const to =
+              dep.serviceJourney?.to?.stopPlace.name ||
+              "Data ikke tilgjengelig";
+
             return (
               <li
                 key={idx}
                 className="flex justify-between items-center bg-gray-100 p-3 rounded-md"
               >
-                <span className="font-semibold text-lg text-gray-800">
-                  🚌 {busNumber}
-                </span>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-lg text-gray-800">
+                    🚌 {busNumber}
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    Fra: {from} → Til: {to}
+                  </span>
+                </div>
                 <span className="text-gray-600">{destination}</span>
                 <span className="font-medium text-blue-600">
                   {departureTime}

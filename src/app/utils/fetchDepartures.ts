@@ -15,6 +15,16 @@ export const fetchDepartures = async (stopPlaceId: string) => {
               line {
                 publicCode
               }
+              from {
+                stopPlace {
+                  name
+                }
+              }
+              to {
+                stopPlace {
+                  name
+                }
+              }
             }
           }
         }
@@ -37,13 +47,13 @@ export const fetchDepartures = async (stopPlaceId: string) => {
 
     const data = await response.json();
 
-    // Debugging logs
+    // Logg hele API-responsen for å se hva som returneres
     console.log("Full API Response:", JSON.stringify(data, null, 2));
 
     // Håndter GraphQL-feil
     if (data.errors) {
-      console.error("GraphQL error:", data.errors);
-      throw new Error("API returnerte en GraphQL-feil");
+      console.error("GraphQL errors:", data.errors);
+      throw new Error(`API returnerte en GraphQL-feil: ${JSON.stringify(data.errors)}`);
     }
 
     return data.data?.stopPlace ?? { estimatedCalls: [] };
