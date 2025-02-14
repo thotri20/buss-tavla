@@ -11,6 +11,11 @@ export const fetchDepartures = async (stopPlaceId: string) => {
             destinationDisplay {
               frontText
             }
+            serviceJourney {
+              line {
+                publicCode
+              }
+            }
           }
         }
       }

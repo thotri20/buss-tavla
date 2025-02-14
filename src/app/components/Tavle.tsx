@@ -7,6 +7,11 @@ import { fetchDepartures } from "../utils/fetchDepartures";
 interface Departure {
   expectedDepartureTime: string;
   destinationDisplay: { frontText: string };
+  serviceJourney?: {
+    line?: {
+      publicCode?: string;
+    };
+  };
 }
 
 const Tavle = () => {
@@ -62,26 +67,38 @@ const Tavle = () => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="bg-gray-100 p-4 rounded shadow-md w-full max-w-md">
-      <h2 className="text-lg font-bold mb-2">Avganger</h2>
-      <ul>
+    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+      <h2 className="text-xl font-bold mb-4 text-blue-700">Avganger</h2>
+      <ul className="space-y-3">
         {departures.length > 0 ? (
-          departures.map((dep, idx) => (
-            <li key={idx} className="text-blue-600">
-              {dep.destinationDisplay.frontText} -{" "}
-              {dep.expectedDepartureTime ? (
-                new Date(dep.expectedDepartureTime).toLocaleTimeString(
+          departures.map((dep, idx) => {
+            const busNumber = dep.serviceJourney?.line?.publicCode || "??";
+            const destination = dep.destinationDisplay.frontText || "Ukjent";
+            const departureTime = dep.expectedDepartureTime
+              ? new Date(dep.expectedDepartureTime).toLocaleTimeString(
                   "nb-NO",
                   {
                     hour: "2-digit",
                     minute: "2-digit",
                   }
                 )
-              ) : (
-                <span className="text-red-500">Ugyldig tid</span>
-              )}
-            </li>
-          ))
+              : "Ugyldig tid";
+
+            return (
+              <li
+                key={idx}
+                className="flex justify-between items-center bg-gray-100 p-3 rounded-md"
+              >
+                <span className="font-semibold text-lg text-gray-800">
+                  🚌 {busNumber}
+                </span>
+                <span className="text-gray-600">{destination}</span>
+                <span className="font-medium text-blue-600">
+                  {departureTime}
+                </span>
+              </li>
+            );
+          })
         ) : (
           <p>Ingen avganger tilgjengelig</p>
         )}
