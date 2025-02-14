@@ -1,5 +1,5 @@
 // src/pages/index.tsx
-import Tavle from "../components/Tavle";
+import Tavle from "./components/Tavle";
 
 export default function Home() {
   return (

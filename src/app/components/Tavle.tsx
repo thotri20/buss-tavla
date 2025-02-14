@@ -1,4 +1,5 @@
-// src/components/Tavle.tsx
+"use client";
+
 import { useEffect, useState } from "react";
 import { fetchDepartures } from "../utils/fetchDepartures";
 
@@ -23,17 +24,20 @@ const Tavle = () => {
 
         const data = await fetchDepartures("58225");
 
-        if (!data || !data.estimatedCalls) {
-          throw new Error("Ugyldig dataformat");
+        console.log("Fetched data:", data); // Debug API-data
+
+        if (!data || !Array.isArray(data.estimatedCalls)) {
+          throw new Error("Ugyldig dataformat fra API");
         }
 
         if (isMounted) {
           setDepartures(data.estimatedCalls);
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (err) {
+      } catch (err: unknown) {
         if (isMounted) {
-          setError("Kunne ikke hente avganger. Sjekk API-kallet.");
+          const errorMessage =
+            err instanceof Error ? err.message : "Ukjent feil oppstod";
+          setError(`Kunne ikke hente avganger: ${errorMessage}`);
         }
       } finally {
         if (isMounted) {
@@ -65,10 +69,17 @@ const Tavle = () => {
           departures.map((dep, idx) => (
             <li key={idx} className="text-blue-600">
               {dep.destinationDisplay.frontText} -{" "}
-              {new Date(dep.expectedDepartureTime).toLocaleTimeString("nb-NO", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              {dep.expectedDepartureTime ? (
+                new Date(dep.expectedDepartureTime).toLocaleTimeString(
+                  "nb-NO",
+                  {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }
+                )
+              ) : (
+                <span className="text-red-500">Ugyldig tid</span>
+              )}
             </li>
           ))
         ) : (
