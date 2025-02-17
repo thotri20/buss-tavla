@@ -15,6 +15,28 @@ interface Departure {
   stopPlaceName?: string; // Stoppestednavn
 }
 
+const getLineColor = (line: string): string => {
+  // Funksjon for å tildele mørkere farger basert på linjenummer
+  const lineNumber = parseInt(line, 10);
+  if (lineNumber >= 1 && lineNumber <= 10) {
+    return "bg-gray-800"; // Mørk grå bakgrunn for linjer 1-10
+  } else if (lineNumber >= 11 && lineNumber <= 20) {
+    return "bg-gray-700"; // Mørkere grå for linjer 11-20
+  } else if (lineNumber >= 21 && lineNumber <= 30) {
+    return "bg-gray-600"; // Enda mørkere grå for linjer 21-30
+  } else {
+    return "bg-gray-900"; // Mørkeste grå (nesten svart) for alle andre linjer
+  }
+};
+
+// Oppdatert stil for tid
+const departureTimeStyle =
+  "font-semibold text-xl text-white bg-blue-500 p-2 rounded-lg shadow-lg";
+
+// For å gjøre stoppestedet mer synlig, men med hvit tekst
+const stopPlaceStyle =
+  "text-sm font-bold text-white bg-gray-600 p-2 rounded-lg shadow-md";
+
 const Tavle = () => {
   const [departures, setDepartures] = useState<Departure[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -96,23 +118,22 @@ const Tavle = () => {
                 )
               : "Ugyldig tid";
             const stopPlace = dep.stopPlaceName || "Ukjent Stoppested";
+            const lineColor = getLineColor(busNumber); // Hent fargen basert på linjenummer
 
             return (
               <li
                 key={idx}
-                className="bg-gray-50 p-4 rounded-lg shadow-sm border-l-4 border-blue-500"
+                className={`p-4 rounded-lg shadow-sm border-l-4 border-blue-500 flex justify-between items-center ${lineColor}`}
               >
-                <div className="flex justify-between items-center">
-                  <div>
-                    <span className="text-blue-700 font-semibold text-lg">
-                      🚌 {busNumber} → {destination}
-                    </span>
-                    <p className="text-sm text-gray-500">{stopPlace}</p>
-                  </div>
-                  <span className="font-medium text-blue-600 text-lg">
-                    {departureTime}
+                <div>
+                  <span className={`text-blue-700 font-semibold text-lg`}>
+                    🚌 {busNumber} → {destination}
                   </span>
+                  {/* Legg til hvit tekst og bakgrunn for stoppestedet */}
+                  <p className={stopPlaceStyle}>{stopPlace}</p>
                 </div>
+                {/* Markér avgangstid med en sterk bakgrunnsfarge og hvit tekst */}
+                <span className={departureTimeStyle}>{departureTime}</span>
               </li>
             );
           })
