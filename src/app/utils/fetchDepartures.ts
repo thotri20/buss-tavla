@@ -1,5 +1,6 @@
 const ENTUR_API = "https://api.entur.io/journey-planner/v3/graphql";
 
+// TypeScript-grensesnitt for avganger
 interface EstimatedCall {
   expectedDepartureTime: string;
   destinationDisplay: {
@@ -9,6 +10,9 @@ interface EstimatedCall {
     line?: {
       publicCode?: string;
     };
+  };
+  stopPlace?: {
+    name?: string; // Legg til stopPlace med navn
   };
 }
 
@@ -28,6 +32,7 @@ export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall
       .map(
         (id) => `
       stop_${id}: stopPlace(id: "NSR:StopPlace:${id}") {
+        name
         estimatedCalls(numberOfDepartures: 10) {
           expectedDepartureTime
           destinationDisplay {
@@ -62,9 +67,12 @@ export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall
       throw new Error(`API returnerte en GraphQL-feil: ${JSON.stringify(data.errors)}`);
     }
 
-    // Samle alle avganger i én liste
+    // Samle alle avganger i én liste, inkludert stoppestedet
     const allDepartures = stopPlaceIds.flatMap(
-      (id) => data.data[`stop_${id}`]?.estimatedCalls ?? []
+      (id) => data.data[`stop_${id}`]?.estimatedCalls.map((call: EstimatedCall) => ({
+        ...call,
+        stopPlaceName: data.data[`stop_${id}`]?.name // Hent stoppestednavnet
+      })) ?? []
     );
 
     return { estimatedCalls: allDepartures };

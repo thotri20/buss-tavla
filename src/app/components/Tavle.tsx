@@ -12,6 +12,7 @@ interface Departure {
       publicCode?: string;
     };
   };
+  stopPlaceName?: string; // Stoppestednavn
 }
 
 const Tavle = () => {
@@ -44,7 +45,8 @@ const Tavle = () => {
         );
 
         if (isMounted) {
-          setDepartures(sortedDepartures);
+          // Bruk slice for å vise bare de første 5
+          setDepartures(sortedDepartures.slice(0, 5));
         }
       } catch (err: unknown) {
         if (isMounted) {
@@ -91,26 +93,29 @@ const Tavle = () => {
                   }
                 )
               : "Ugyldig tid";
+            const stopPlace = dep.stopPlaceName || "Ukjent Stoppested"; // Stoppestednavn
 
             return (
               <li
                 key={idx}
-                className="flex justify-between items-center bg-gray-100 p-3 rounded-md"
+                className="flex justify-between items-center bg-gray-100 p-4 rounded-md shadow-sm"
               >
-                <div className="flex flex-col">
+                <div className="flex flex-col space-y-1">
                   <span className="font-semibold text-lg text-gray-800">
-                    🚌 {busNumber}
+                    🚌 {busNumber} {destination}
+                  </span>
+                  <span className="text-sm text-gray-600">{stopPlace}</span>
+                </div>
+                <div className="flex flex-col items-end space-y-1">
+                  <span className="font-medium text-blue-600">
+                    {departureTime}
                   </span>
                 </div>
-                <span className="text-gray-600">{destination}</span>
-                <span className="font-medium text-blue-600">
-                  {departureTime}
-                </span>
               </li>
             );
           })
         ) : (
-          <p>Ingen avganger tilgjengelig</p>
+          <p className="text-gray-500">Ingen avganger tilgjengelig</p>
         )}
       </ul>
     </div>
