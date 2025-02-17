@@ -12,7 +12,7 @@ interface EstimatedCall {
     };
   };
   stopPlace?: {
-    name?: string; // Legg til stopPlace med navn
+    name?: string; // Stoppestednavn
   };
 }
 
@@ -71,7 +71,8 @@ export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall
     const allDepartures = stopPlaceIds.flatMap(
       (id) => data.data[`stop_${id}`]?.estimatedCalls.map((call: EstimatedCall) => ({
         ...call,
-        stopPlaceName: data.data[`stop_${id}`]?.name // Hent stoppestednavnet
+        stopPlaceName: data.data[`stop_${id}`]?.name,
+        finalDestination: call.destinationDisplay.frontText || "Ukjent destinasjon"
       })) ?? []
     );
 

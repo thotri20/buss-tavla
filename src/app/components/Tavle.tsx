@@ -78,8 +78,10 @@ const Tavle = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-      <h2 className="text-xl font-bold mb-4 text-blue-700">Avganger</h2>
-      <ul className="space-y-3">
+      <h2 className="text-2xl font-bold mb-4 text-blue-700 text-center">
+        Bussavganger
+      </h2>
+      <ul className="space-y-4">
         {departures.length > 0 ? (
           departures.map((dep, idx) => {
             const busNumber = dep.serviceJourney?.line?.publicCode || "??";
@@ -93,21 +95,21 @@ const Tavle = () => {
                   }
                 )
               : "Ugyldig tid";
-            const stopPlace = dep.stopPlaceName || "Ukjent Stoppested"; // Stoppestednavn
+            const stopPlace = dep.stopPlaceName || "Ukjent Stoppested";
 
             return (
               <li
                 key={idx}
-                className="flex justify-between items-center bg-gray-100 p-4 rounded-md shadow-sm"
+                className="bg-gray-50 p-4 rounded-lg shadow-sm border-l-4 border-blue-500"
               >
-                <div className="flex flex-col space-y-1">
-                  <span className="font-semibold text-lg text-gray-800">
-                    🚌 {busNumber} {destination}
-                  </span>
-                  <span className="text-sm text-gray-600">{stopPlace}</span>
-                </div>
-                <div className="flex flex-col items-end space-y-1">
-                  <span className="font-medium text-blue-600">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span className="text-blue-700 font-semibold text-lg">
+                      🚌 {busNumber} → {destination}
+                    </span>
+                    <p className="text-sm text-gray-500">{stopPlace}</p>
+                  </div>
+                  <span className="font-medium text-blue-600 text-lg">
                     {departureTime}
                   </span>
                 </div>
@@ -115,7 +117,9 @@ const Tavle = () => {
             );
           })
         ) : (
-          <p className="text-gray-500">Ingen avganger tilgjengelig</p>
+          <p className="text-gray-500 text-center">
+            Ingen avganger tilgjengelig
+          </p>
         )}
       </ul>
     </div>
