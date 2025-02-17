@@ -1,9 +1,8 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import { fetchDepartures } from "../utils/fetchDepartures";
+import { fetchDepartures } from "../utils/fetchDepartures"; // Importer fetchDepartures korrekt
+import { fetchNearestStopPlace } from "../utils/fetchNearestStopPlace"; // Importer fetchNearestStopPlace
 
-// TypeScript-grensesnitt for avgangsdata
 interface Departure {
   expectedDepartureTime: string;
   destinationDisplay: { frontText: string };
@@ -13,31 +12,41 @@ const Tavle = () => {
   const [departures, setDepartures] = useState<Departure[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [stopPlaceId, setStopPlaceId] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
 
-    const getDepartures = async () => {
+    const getStopPlaceAndDepartures = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const data = await fetchDepartures("58225");
+        // Koordinatene for Hamar Katedralskole
+        const latitude = 60.804825;
+        const longitude = 11.05453;
 
-        console.log("Fetched data:", data); // Debug API-data
+        // Hent stoppested ID basert på koordinater
+        const stopPlace = await fetchNearestStopPlace(latitude, longitude);
+        
+        console.log("Fetched StopPlace:", stopPlace);
 
-        if (!data || !Array.isArray(data.estimatedCalls)) {
-          throw new Error("Ugyldig dataformat fra API");
-        }
-
-        if (isMounted) {
-          setDepartures(data.estimatedCalls);
+        if (stopPlace && stopPlace.id) {
+          setStopPlaceId(stopPlace.id); // Sett stoppested-ID
+          // Hent avganger for det funnet stoppestedet (ID)
+          const data = await fetchDepartures(stopPlace.id);
+          
+          if (data && data.estimatedCalls) {
+            setDepartures(data.estimatedCalls);
+          }
+        } else {
+          throw new Error("Ingen stoppested funnet.");
         }
       } catch (err: unknown) {
         if (isMounted) {
           const errorMessage =
             err instanceof Error ? err.message : "Ukjent feil oppstod";
-          setError(`Kunne ikke hente avganger: ${errorMessage}`);
+          setError(`Kunne ikke hente data: ${errorMessage}`);
         }
       } finally {
         if (isMounted) {
@@ -46,10 +55,10 @@ const Tavle = () => {
       }
     };
 
-    getDepartures();
+    getStopPlaceAndDepartures();
 
     // Oppdater hvert 60. sekund
-    const intervalId = setInterval(getDepartures, 60000);
+    const intervalId = setInterval(getStopPlaceAndDepartures, 60000);
 
     // Cleanup når komponenten unmountes
     return () => {
@@ -63,7 +72,7 @@ const Tavle = () => {
 
   return (
     <div className="bg-gray-100 p-4 rounded shadow-md w-full max-w-md">
-      <h2 className="text-lg font-bold mb-2">Avganger</h2>
+      <h2 className="text-lg font-bold mb-2">Avganger fra Stoppested {stopPlaceId}</h2>
       <ul>
         {departures.length > 0 ? (
           departures.map((dep, idx) => (
