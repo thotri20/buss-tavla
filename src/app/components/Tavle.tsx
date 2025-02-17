@@ -11,12 +11,6 @@ interface Departure {
     line?: {
       publicCode?: string;
     };
-    from?: {
-      stopPlace: { name: string };
-    };
-    to?: {
-      stopPlace: { name: string };
-    };
   };
 }
 
@@ -91,14 +85,6 @@ const Tavle = () => {
                 )
               : "Ugyldig tid";
 
-            // Håndter manglende data for fra og til
-            const from =
-              dep.serviceJourney?.from?.stopPlace.name ||
-              "Data ikke tilgjengelig";
-            const to =
-              dep.serviceJourney?.to?.stopPlace.name ||
-              "Data ikke tilgjengelig";
-
             return (
               <li
                 key={idx}
@@ -107,9 +93,6 @@ const Tavle = () => {
                 <div className="flex flex-col">
                   <span className="font-semibold text-lg text-gray-800">
                     🚌 {busNumber}
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    Fra: {from} → Til: {to}
                   </span>
                 </div>
                 <span className="text-gray-600">{destination}</span>
