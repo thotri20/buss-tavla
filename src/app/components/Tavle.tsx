@@ -27,8 +27,8 @@ const Tavle = () => {
         setLoading(true);
         setError(null);
 
-        // Fetch departures for Hamar (StopPlace ID: 10692)
-        const data = await fetchDepartures("10692");
+        // Hent avganger fra ALLE stoppene
+        const data = await fetchDepartures();
 
         console.log("Fetched data:", data); // Debug API-data
 
@@ -36,8 +36,15 @@ const Tavle = () => {
           throw new Error("Ugyldig dataformat fra API");
         }
 
+        // Sorter etter tid
+        const sortedDepartures = data.estimatedCalls.sort(
+          (a, b) =>
+            new Date(a.expectedDepartureTime).getTime() -
+            new Date(b.expectedDepartureTime).getTime()
+        );
+
         if (isMounted) {
-          setDepartures(data.estimatedCalls);
+          setDepartures(sortedDepartures);
         }
       } catch (err: unknown) {
         if (isMounted) {

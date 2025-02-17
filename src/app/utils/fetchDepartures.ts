@@ -12,25 +12,38 @@ interface EstimatedCall {
   };
 }
 
-export const fetchDepartures = async (stopPlaceId: string): Promise<{ estimatedCalls: EstimatedCall[] }> => {
+// Liste over stoppene du vil hente data fra
+const stopPlaceIds = [
+  "70115", // Opplands gate
+  "10674", // Bellevue
+  "10671", // Lilleajervegen
+  "10689", // Vognvegen/Furubergvegen
+  "10642", // Svartoldervegen
+];
+
+export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall[] }> => {
   try {
-    const query = `
-      query {
-        stopPlace(id: "NSR:StopPlace:${stopPlaceId}") {
-          estimatedCalls(numberOfDepartures: 5) {
-            expectedDepartureTime
-            destinationDisplay {
-              frontText
-            }
-            serviceJourney {
-              line {
-                publicCode
-              }
+    // Dynamisk lage GraphQL-spørring for alle stopp
+    const queries = stopPlaceIds
+      .map(
+        (id) => `
+      stop_${id}: stopPlace(id: "NSR:StopPlace:${id}") {
+        estimatedCalls(numberOfDepartures: 10) {
+          expectedDepartureTime
+          destinationDisplay {
+            frontText
+          }
+          serviceJourney {
+            line {
+              publicCode
             }
           }
         }
-      }
-    `;
+      }`
+      )
+      .join("\n");
+
+    const query = `query { ${queries} }`;
 
     const response = await fetch(ENTUR_API, {
       method: "POST",
@@ -49,7 +62,12 @@ export const fetchDepartures = async (stopPlaceId: string): Promise<{ estimatedC
       throw new Error(`API returnerte en GraphQL-feil: ${JSON.stringify(data.errors)}`);
     }
 
-    return { estimatedCalls: data.data?.stopPlace?.estimatedCalls ?? [] };
+    // Samle alle avganger i én liste
+    const allDepartures = stopPlaceIds.flatMap(
+      (id) => data.data[`stop_${id}`]?.estimatedCalls ?? []
+    );
+
+    return { estimatedCalls: allDepartures };
   } catch (error) {
     console.error("Fetch error:", error);
     return { estimatedCalls: [] };
