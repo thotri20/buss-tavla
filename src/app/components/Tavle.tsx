@@ -16,26 +16,26 @@ interface Departure {
 }
 
 const getLineColor = (line: string): string => {
-  // Funksjon for å tildele mørkere farger basert på linjenummer
+  // Funksjon for å tildele kontrasterende farger basert på linjenummer
   const lineNumber = parseInt(line, 10);
   if (lineNumber >= 1 && lineNumber <= 10) {
-    return "bg-gray-800"; // Mørk grå bakgrunn for linjer 1-10
+    return "bg-blue-700 text-white"; // Blå bakgrunn, hvit tekst for linjer 1-10
   } else if (lineNumber >= 11 && lineNumber <= 20) {
-    return "bg-gray-700"; // Mørkere grå for linjer 11-20
+    return "bg-orange-600 text-white"; // Oransje bakgrunn, hvit tekst for linjer 11-20
   } else if (lineNumber >= 21 && lineNumber <= 30) {
-    return "bg-gray-600"; // Enda mørkere grå for linjer 21-30
+    return "bg-teal-600 text-white"; // Teal bakgrunn, hvit tekst for linjer 21-30
   } else {
-    return "bg-gray-900"; // Mørkeste grå (nesten svart) for alle andre linjer
+    return "bg-gray-700 text-white"; // Mørk grå bakgrunn, hvit tekst for alle andre linjer
   }
 };
 
 // Oppdatert stil for tid
 const departureTimeStyle =
-  "font-semibold text-xl text-white bg-blue-500 p-2 rounded-lg shadow-lg";
+  "font-semibold text-xl text-white bg-red-500 p-2 rounded-lg shadow-lg";
 
-// For å gjøre stoppestedet mer synlig, men med hvit tekst
+// For å gjøre stoppestedet mer synlig
 const stopPlaceStyle =
-  "text-sm font-bold text-white bg-gray-600 p-2 rounded-lg shadow-md";
+  "text-sm font-bold text-white bg-indigo-700 p-2 rounded-lg shadow-md";
 
 const Tavle = () => {
   const [departures, setDepartures] = useState<Departure[]>([]);
@@ -99,8 +99,8 @@ const Tavle = () => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-      <h2 className="text-2xl font-bold mb-4 text-blue-700 text-center">
+    <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full max-w-md">
+      <h2 className="text-2xl font-bold mb-4 text-indigo-800 text-center">
         Bussavganger
       </h2>
       <ul className="space-y-4">
@@ -123,16 +123,16 @@ const Tavle = () => {
             return (
               <li
                 key={idx}
-                className={`p-4 rounded-lg shadow-sm border-l-4 border-blue-500 flex justify-between items-center ${lineColor}`}
+                className={`p-4 rounded-lg shadow-sm border-l-4 border-indigo-800 flex justify-between items-center ${lineColor}`}
               >
                 <div>
-                  <span className={`text-blue-700 font-semibold text-lg`}>
+                  <span className="font-semibold text-lg">
                     🚌 {busNumber} → {destination}
                   </span>
                   {/* Legg til hvit tekst og bakgrunn for stoppestedet */}
                   <p className={stopPlaceStyle}>{stopPlace}</p>
                 </div>
-                {/* Markér avgangstid med en sterk bakgrunnsfarge og hvit tekst */}
+                {/* Markér avgangstid med en sterk bakgrunnsfarge og tydelig tekst */}
                 <span className={departureTimeStyle}>{departureTime}</span>
               </li>
             );
