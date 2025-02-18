@@ -1,20 +1,54 @@
-export const fetchDepartures = async (stopPlaceId: string) => {
-  try {
-    const ENTUR_API = "https://api.entur.io/journey-planner/v3/graphql";
+const ENTUR_API = "https://api.entur.io/journey-planner/v3/graphql";
 
-    const query = `
-      query {
-        stopPlace(id: "NSR:StopPlace:${stopPlaceId}") {
-          name
-          estimatedCalls(numberOfDepartures: 5) {
-            expectedDepartureTime
-            destinationDisplay {
-              frontText
+// TypeScript-grensesnitt for avganger
+interface EstimatedCall {
+  expectedDepartureTime: string;
+  destinationDisplay: {
+    frontText: string;
+  };
+  serviceJourney?: {
+    line?: {
+      publicCode?: string;
+    };
+  };
+  stopPlace?: {
+    name?: string; // Stoppestednavn
+  };
+}
+
+// Liste over stoppene du vil hente data fra
+const stopPlaceIds = [
+  "70115", // Opplands gate
+  "10674", // Bellevue
+  "10671", // Lilleajervegen
+  "10689", // Vognvegen/Furubergvegen
+  "10642", // Svartoldervegen
+];
+
+export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall[] }> => {
+  try {
+    // Dynamisk lage GraphQL-spørring for alle stopp
+    const queries = stopPlaceIds
+      .map(
+        (id) => `
+      stop_${id}: stopPlace(id: "NSR:StopPlace:${id}") {
+        name
+        estimatedCalls(numberOfDepartures: 10) {
+          expectedDepartureTime
+          destinationDisplay {
+            frontText
+          }
+          serviceJourney {
+            line {
+              publicCode
             }
           }
         }
-      }
-    `;
+      }`
+      )
+      .join("\n");
+
+    const query = `query { ${queries} }`;
 
     const response = await fetch(ENTUR_API, {
       method: "POST",
@@ -26,22 +60,23 @@ export const fetchDepartures = async (stopPlaceId: string) => {
       body: JSON.stringify({ query }),
     });
 
-    if (!response.ok) {
-      throw new Error(`Feil ved API-kall: ${response.status} ${response.statusText}`);
-    }
-
     const data = await response.json();
 
-    // Debugging logs
-    console.log("Full API Response:", JSON.stringify(data, null, 2));
-
-    // Håndter GraphQL-feil
     if (data.errors) {
-      console.error("GraphQL error:", data.errors);
-      throw new Error("API returnerte en GraphQL-feil");
+      console.error("GraphQL errors:", data.errors);
+      throw new Error(`API returnerte en GraphQL-feil: ${JSON.stringify(data.errors)}`);
     }
 
-    return data.data?.stopPlace ?? { estimatedCalls: [] };
+    // Samle alle avganger i én liste, inkludert stoppestedet
+    const allDepartures = stopPlaceIds.flatMap(
+      (id) => data.data[`stop_${id}`]?.estimatedCalls.map((call: EstimatedCall) => ({
+        ...call,
+        stopPlaceName: data.data[`stop_${id}`]?.name,
+        finalDestination: call.destinationDisplay.frontText || "Ukjent destinasjon"
+      })) ?? []
+    );
+
+    return { estimatedCalls: allDepartures };
   } catch (error) {
     console.error("Fetch error:", error);
     return { estimatedCalls: [] };
