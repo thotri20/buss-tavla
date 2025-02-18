@@ -12,28 +12,25 @@ interface Departure {
       publicCode?: string;
     };
   };
-  stopPlaceName?: string; // Stoppestednavn
+  stopPlace?: { name?: string }; // Endret her for å samsvare med API-strukturen
 }
 
 const getLineColor = (line: string): string => {
-  // Funksjon for å tildele kontrasterende farger basert på linjenummer
   const lineNumber = parseInt(line, 10);
   if (lineNumber >= 1 && lineNumber <= 10) {
-    return "bg-blue-700 text-white"; // Blå bakgrunn, hvit tekst for linjer 1-10
+    return "bg-blue-700 text-white";
   } else if (lineNumber >= 11 && lineNumber <= 20) {
-    return "bg-orange-600 text-white"; // Oransje bakgrunn, hvit tekst for linjer 11-20
+    return "bg-orange-600 text-white";
   } else if (lineNumber >= 21 && lineNumber <= 30) {
-    return "bg-teal-600 text-white"; // Teal bakgrunn, hvit tekst for linjer 21-30
+    return "bg-teal-600 text-white";
   } else {
-    return "bg-gray-700 text-white"; // Mørk grå bakgrunn, hvit tekst for alle andre linjer
+    return "bg-gray-700 text-white";
   }
 };
 
-// Oppdatert stil for tid
 const departureTimeStyle =
   "font-semibold text-xl text-white bg-red-500 p-2 rounded-lg shadow-lg";
 
-// For å gjøre stoppestedet mer synlig
 const stopPlaceStyle =
   "text-sm font-bold text-white bg-indigo-700 p-2 rounded-lg shadow-md";
 
@@ -41,6 +38,9 @@ const Tavle = () => {
   const [departures, setDepartures] = useState<Departure[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedStopPlace, setSelectedStopPlace] = useState<string | null>(
+    null
+  ); // State for valgt stoppested
 
   useEffect(() => {
     let isMounted = true;
@@ -50,25 +50,26 @@ const Tavle = () => {
         setLoading(true);
         setError(null);
 
-        // Hent avganger fra ALLE stoppene
         const data = await fetchDepartures();
-
-        console.log("Fetched data:", data); // Debug API-data
-
         if (!data || !Array.isArray(data.estimatedCalls)) {
           throw new Error("Ugyldig dataformat fra API");
         }
 
-        // Sorter etter tid
-        const sortedDepartures = data.estimatedCalls.sort(
+        // Filtrer avganger basert på valgt stoppested (sørg for at stopPlace.name er korrekt)
+        const filteredDepartures = selectedStopPlace
+          ? data.estimatedCalls.filter(
+              (dep) => dep.stopPlace?.name === selectedStopPlace
+            )
+          : data.estimatedCalls;
+
+        const sortedDepartures = filteredDepartures.sort(
           (a, b) =>
             new Date(a.expectedDepartureTime).getTime() -
             new Date(b.expectedDepartureTime).getTime()
         );
 
         if (isMounted) {
-          // Bruk slice for å vise bare de første 5
-          setDepartures(sortedDepartures.slice(0, 5));
+          setDepartures(sortedDepartures.slice(0, 5)); // Vis kun de første 5 avgangene
         }
       } catch (err: unknown) {
         if (isMounted) {
@@ -84,25 +85,54 @@ const Tavle = () => {
     };
 
     getDepartures();
+    const intervalId = setInterval(getDepartures, 60000); // Oppdater hvert 60. sekund
 
-    // Oppdater hvert 60. sekund
-    const intervalId = setInterval(getDepartures, 60000);
-
-    // Cleanup når komponenten unmountes
     return () => {
       isMounted = false;
       clearInterval(intervalId);
     };
-  }, []);
+  }, [selectedStopPlace]); // Effekt oppdateres når valgt stoppested endres
 
   if (loading) return <p className="text-gray-500">Laster avganger...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
+
+  const stopPlaces = [
+    "Opplands gate",
+    "Bellevue",
+    "Lilleajervegen",
+    "Vognvegen/Furubergvegen",
+    "Svartoldervegen",
+  ];
 
   return (
     <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full max-w-md">
       <h2 className="text-2xl font-bold mb-4 text-indigo-800 text-center">
         Bussavganger
       </h2>
+
+      {/* Dropdown for valg av stoppested */}
+      <div className="mb-4">
+        <label
+          htmlFor="stopPlace"
+          className="block text-sm font-semibold text-indigo-800 mb-2"
+        >
+          Velg Stoppested:
+        </label>
+        <select
+          id="stopPlace"
+          value={selectedStopPlace || ""} // Setter den valgte verdien i dropdownen
+          className="w-full p-3 rounded-lg border-2 border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-indigo-800 transition-all ease-in-out duration-300 shadow-lg hover:bg-indigo-100"
+          onChange={(e) => setSelectedStopPlace(e.target.value || null)} // Set stoppested eller null for alle
+        >
+          <option value="">Alle Stopp</option>
+          {stopPlaces.map((stopPlace, index) => (
+            <option key={index} value={stopPlace}>
+              {stopPlace}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <ul className="space-y-4">
         {departures.length > 0 ? (
           departures.map((dep, idx) => {
@@ -117,22 +147,20 @@ const Tavle = () => {
                   }
                 )
               : "Ugyldig tid";
-            const stopPlace = dep.stopPlaceName || "Ukjent Stoppested";
-            const lineColor = getLineColor(busNumber); // Hent fargen basert på linjenummer
+            const stopPlace = dep.stopPlace?.name || "Ukjent Stoppested"; // Endret her
+            const lineColor = getLineColor(busNumber);
 
             return (
               <li
                 key={idx}
-                className={`p-4 rounded-lg shadow-sm border-l-4 border-indigo-800 flex justify-between items-center ${lineColor}`}
+                className={`p-4 rounded-lg shadow-lg border-l-4 border-indigo-800 flex justify-between items-center ${lineColor} hover:scale-105 transition-all ease-in-out duration-200`}
               >
                 <div>
                   <span className="font-semibold text-lg">
                     🚌 {busNumber} → {destination}
                   </span>
-                  {/* Legg til hvit tekst og bakgrunn for stoppestedet */}
                   <p className={stopPlaceStyle}>{stopPlace}</p>
                 </div>
-                {/* Markér avgangstid med en sterk bakgrunnsfarge og tydelig tekst */}
                 <span className={departureTimeStyle}>{departureTime}</span>
               </li>
             );

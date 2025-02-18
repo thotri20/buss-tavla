@@ -30,21 +30,20 @@ export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall
     // Dynamisk lage GraphQL-spørring for alle stopp
     const queries = stopPlaceIds
       .map(
-        (id) => `
-      stop_${id}: stopPlace(id: "NSR:StopPlace:${id}") {
-        name
-        estimatedCalls(numberOfDepartures: 10) {
-          expectedDepartureTime
-          destinationDisplay {
-            frontText
-          }
-          serviceJourney {
-            line {
-              publicCode
+        (id) => `stop_${id}: stopPlace(id: "NSR:StopPlace:${id}") {
+          name
+          estimatedCalls(numberOfDepartures: 10) {
+            expectedDepartureTime
+            destinationDisplay {
+              frontText
+            }
+            serviceJourney {
+              line {
+                publicCode
+              }
             }
           }
-        }
-      }`
+        }`
       )
       .join("\n");
 
@@ -71,8 +70,9 @@ export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall
     const allDepartures = stopPlaceIds.flatMap(
       (id) => data.data[`stop_${id}`]?.estimatedCalls.map((call: EstimatedCall) => ({
         ...call,
-        stopPlaceName: data.data[`stop_${id}`]?.name,
-        finalDestination: call.destinationDisplay.frontText || "Ukjent destinasjon"
+        stopPlace: {
+          name: data.data[`stop_${id}`]?.name, // Få stoppestedets navn direkte fra API-svaret
+        },
       })) ?? []
     );
 
