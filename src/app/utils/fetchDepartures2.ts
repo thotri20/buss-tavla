@@ -12,18 +12,15 @@ interface EstimatedCall {
     };
   };
   stopPlace?: {
-    name?: string; // Stoppestednavn
   };
 }
 
-// Liste over stoppene du vil hente data fra
 const stopPlaceIds = [
   "10692", // Hamar Kattedralskole
 ];
 
 export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall[] }> => {
   try {
-    // Dynamisk lage GraphQL-spørring for alle stopp
     const queries = stopPlaceIds
       .map(
         (id) => `
@@ -63,7 +60,6 @@ export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall
       throw new Error(`API returnerte en GraphQL-feil: ${JSON.stringify(data.errors)}`);
     }
 
-    // Samle alle avganger i én liste, inkludert stoppestedet
     const allDepartures = stopPlaceIds.flatMap(
       (id) => data.data[`stop_${id}`]?.estimatedCalls.map((call: EstimatedCall) => ({
         ...call,

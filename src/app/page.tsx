@@ -1,4 +1,3 @@
-// src/app/page.tsx
 import Tavle from "./components/Tavle";
 import Tavle2 from "./components/Tavle2";
 
