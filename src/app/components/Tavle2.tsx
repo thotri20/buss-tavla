@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchDepartures } from "../utils/fetchDepartures";
+import { fetchDepartures } from "../utils/fetchDepartures2";
 
 interface Departure {
   expectedDepartureTime: string;
@@ -67,23 +67,9 @@ const Tavle = () => {
   return (
     <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full max-w-md">
       <h2 className="text-2xl font-bold mb-4 text-indigo-800 text-center">
-        Andre holdeplasser
+        Hamar katedralskole
       </h2>
-      <div className="mb-4 flex space-x-2 overflow-x-auto p-2 bg-white shadow-md rounded-lg">
-        {stopPlaces.map((stop) => (
-          <button
-            key={stop}
-            onClick={() =>
-              setSelectedStop(selectedStop === stop ? null : stop)
-            }
-            className={`px-4 py-2 text-sm font-bold rounded-lg shadow-md transition-colors ${
-              selectedStop === stop ? "bg-blue-700 text-white" : "bg-gray-300 text-indigo-800"
-            }`}
-          >
-            {stop}
-          </button>
-        ))}
-      </div>
+
       {loading ? (
         <p className="text-gray-500">Laster avganger...</p>
       ) : error ? (
