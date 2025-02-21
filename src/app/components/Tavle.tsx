@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { fetchDepartures } from "../utils/fetchDepartures";
 
-// TypeScript-grensesnitt for avgangsdata
 interface Departure {
   expectedDepartureTime: string;
   destinationDisplay: { frontText: string };
@@ -12,7 +11,7 @@ interface Departure {
       publicCode?: string;
     };
   };
-  stopPlace?: { name?: string }; // Endret her for å samsvare med API-strukturen
+  stopPlace?: { name?: string };
 }
 
 const getLineColor = (line: string): string => {
@@ -40,7 +39,7 @@ const Tavle = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedStopPlace, setSelectedStopPlace] = useState<string | null>(
     null
-  ); // State for valgt stoppested
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -55,7 +54,6 @@ const Tavle = () => {
           throw new Error("Ugyldig dataformat fra API");
         }
 
-        // Filtrer avganger basert på valgt stoppested (sørg for at stopPlace.name er korrekt)
         const filteredDepartures = selectedStopPlace
           ? data.estimatedCalls.filter(
               (dep) => dep.stopPlace?.name === selectedStopPlace
@@ -69,7 +67,7 @@ const Tavle = () => {
         );
 
         if (isMounted) {
-          setDepartures(sortedDepartures.slice(0, 5)); // Vis kun de første 5 avgangene
+          setDepartures(sortedDepartures.slice(0, 5));
         }
       } catch (err: unknown) {
         if (isMounted) {
@@ -85,13 +83,13 @@ const Tavle = () => {
     };
 
     getDepartures();
-    const intervalId = setInterval(getDepartures, 60000); // Oppdater hvert 60. sekund
+    const intervalId = setInterval(getDepartures, 60000);
 
     return () => {
       isMounted = false;
       clearInterval(intervalId);
     };
-  }, [selectedStopPlace]); // Effekt oppdateres når valgt stoppested endres
+  }, [selectedStopPlace]);
 
   if (loading) return <p className="text-gray-500">Laster avganger...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -110,7 +108,6 @@ const Tavle = () => {
         Bussavganger
       </h2>
 
-      {/* Dropdown for valg av stoppested */}
       <div className="mb-4">
         <label
           htmlFor="stopPlace"
@@ -120,9 +117,9 @@ const Tavle = () => {
         </label>
         <select
           id="stopPlace"
-          value={selectedStopPlace || ""} // Setter den valgte verdien i dropdownen
+          value={selectedStopPlace || ""}
           className="w-full p-3 rounded-lg border-2 border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-indigo-800 transition-all ease-in-out duration-300 shadow-lg hover:bg-indigo-100"
-          onChange={(e) => setSelectedStopPlace(e.target.value || null)} // Set stoppested eller null for alle
+          onChange={(e) => setSelectedStopPlace(e.target.value || null)}
         >
           <option value="">Alle Stopp</option>
           {stopPlaces.map((stopPlace, index) => (
@@ -147,7 +144,7 @@ const Tavle = () => {
                   }
                 )
               : "Ugyldig tid";
-            const stopPlace = dep.stopPlace?.name || "Ukjent Stoppested"; // Endret her
+            const stopPlace = dep.stopPlace?.name || "Ukjent Stoppested";
             const lineColor = getLineColor(busNumber);
 
             return (
