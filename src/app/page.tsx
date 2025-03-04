@@ -1,9 +1,11 @@
 export default function Home() {
+    return(
   <div>
-    <h1 className="color-[#000000]">
+    <h1 className="color-[]">
         Test
     </h1>
     <div> 
     </div>
-  </div>;
+  </div>
+  );
 };

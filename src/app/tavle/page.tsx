@@ -1,9 +1,12 @@
 import Tavle from "../components/Tavle";
 import Tavle2 from "../components/Tavle2";
+import Navbar from "../components/Navbar";
 
 export default function Home() {
   return (
+    <div><Navbar/>
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-200 to-gray-400 p-6">
+      
       <h1 className="text-4xl sm:text-5xl font-extrabold mb-6 text-blue-900 drop-shadow-lg">
         Fluktruter
       </h1>
@@ -11,6 +14,7 @@ export default function Home() {
         <Tavle2/>
         <Tavle/>
       </div>
+    </div>
     </div>
   );
 }
