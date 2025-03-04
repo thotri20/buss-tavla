@@ -45,6 +45,7 @@ const Tavle = () => {
         );
         if (isMounted) setDepartures(sortedDepartures);
       } catch (err) {
+        console.error(err); // Feil logging
         if (isMounted) setError("Kunne ikke hente avganger");
       } finally {
         if (isMounted) setLoading(false);
@@ -59,7 +60,9 @@ const Tavle = () => {
     };
   }, []);
 
-  const stopPlaces = [...new Set(departures.map((dep) => dep.stopPlaceName))].filter(Boolean) as string[];
+  const stopPlaces = [
+    ...new Set(departures.map((dep) => dep.stopPlaceName)),
+  ].filter(Boolean) as string[];
   const filteredDepartures = selectedStop
     ? departures.filter((dep) => dep.stopPlaceName === selectedStop)
     : departures;
@@ -70,6 +73,29 @@ const Tavle = () => {
         Hamar katedralskole
       </h2>
 
+      {/* Dropdown for holdeplasser */}
+      <div className="mb-4">
+        <label
+          htmlFor="stopSelect"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Velg holdeplass:
+        </label>
+        <select
+          id="stopSelect"
+          className="mt-1 p-2 border rounded w-full"
+          value={selectedStop ?? ""}
+          onChange={(e) => setSelectedStop(e.target.value || null)}
+        >
+          <option value="">Alle holdeplasser</option>
+          {stopPlaces.map((stop) => (
+            <option key={stop} value={stop}>
+              {stop}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {loading ? (
         <p className="text-gray-500">Laster avganger...</p>
       ) : error ? (
@@ -79,15 +105,33 @@ const Tavle = () => {
           {filteredDepartures.map((dep, idx) => {
             const busNumber = dep.serviceJourney?.line?.publicCode || "??";
             const destination = dep.destinationDisplay.frontText || "Ukjent";
-            const departureTime = new Date(dep.expectedDepartureTime).toLocaleTimeString("nb-NO", { hour: "2-digit", minute: "2-digit" });
+            const departureTime = new Date(
+              dep.expectedDepartureTime
+            ).toLocaleTimeString("nb-NO", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+
             return (
-              <li key={idx} className={`p-4 rounded-lg shadow-sm border-l-4 border-indigo-800 flex justify-between items-center ${getLineColor(busNumber)}`}>
+              <li
+                key={idx}
+                className={`p-4 rounded-lg shadow-sm border-l-4 border-indigo-800 flex justify-between items-center ${getLineColor(
+                  busNumber
+                )}`}
+              >
                 <div>
-                  <h2 className="font-semibold text-lg">🚌 {busNumber} → {destination}</h2>
+                  <h2 className="font-semibold text-lg">
+                    🚌 {busNumber} → {destination}
+                  </h2>
                   <div>
-                  <p className="text-sm font-bold text-white  p-2 ">{dep.stopPlaceName}</p></div>
+                    <p className="text-sm font-bold text-white p-2">
+                      {dep.stopPlaceName}
+                    </p>
+                  </div>
                 </div>
-                <span className="font-semibold text-xl text-white bg-red-500 p-2 rounded-lg shadow-lg">{departureTime}</span>
+                <span className="font-semibold text-xl text-white bg-red-500 p-2 rounded-lg shadow-lg">
+                  {departureTime}
+                </span>
               </li>
             );
           })}

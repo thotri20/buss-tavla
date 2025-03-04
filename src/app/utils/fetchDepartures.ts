@@ -1,6 +1,6 @@
-const ENTUR_API = "https://api.entur.io/journey-planner/v3/graphql";
+export const ENTUR_API = "https://api.entur.io/journey-planner/v3/graphql";
 
-interface EstimatedCall {
+export interface EstimatedCall {
   expectedDepartureTime: string;
   destinationDisplay: {
     frontText: string;
@@ -10,12 +10,11 @@ interface EstimatedCall {
       publicCode?: string;
     };
   };
-  stopPlace?: {
-    name?: string;
-  };
+  stopPlaceName?: string;
+  finalDestination?: string;
 }
 
-const stopPlaceIds = [
+export const stopPlaceIds: string[] = [
   "70115", // Opplands gate
   "10674", // Bellevue
   "10671", // Lilleajervegen
@@ -26,8 +25,7 @@ const stopPlaceIds = [
 export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall[] }> => {
   try {
     const queries = stopPlaceIds
-      .map(
-        (id) => `
+      .map((id: string) => `
       stop_${id}: stopPlace(id: "NSR:StopPlace:${id}") {
         name
         estimatedCalls(numberOfDepartures: 10) {
@@ -41,8 +39,7 @@ export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall
             }
           }
         }
-      }`
-      )
+      }`)
       .join("\n");
 
     const query = `query { ${queries} }`;
@@ -64,15 +61,22 @@ export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall
       throw new Error(`API returnerte en GraphQL-feil: ${JSON.stringify(data.errors)}`);
     }
 
-    const allDepartures = stopPlaceIds.flatMap(
-      (id) => data.data[`stop_${id}`]?.estimatedCalls.map((call: EstimatedCall) => ({
+    const allDepartures: EstimatedCall[] = stopPlaceIds.flatMap((id: string) =>
+      data.data[`stop_${id}`]?.estimatedCalls.map((call: EstimatedCall) => ({
         ...call,
         stopPlaceName: data.data[`stop_${id}`]?.name,
-        finalDestination: call.destinationDisplay.frontText || "Ukjent destinasjon"
+        finalDestination: call.destinationDisplay.frontText || "Ukjent destinasjon",
       })) ?? []
     );
 
-    return { estimatedCalls: allDepartures };
+    // Sorter etter avgangstid og ta kun de første 10
+    const sortedDepartures = allDepartures
+      .sort((a: EstimatedCall, b: EstimatedCall) => 
+        new Date(a.expectedDepartureTime).getTime() - new Date(b.expectedDepartureTime).getTime()
+      )
+      .slice(0, 11);
+
+    return { estimatedCalls: sortedDepartures };
   } catch (error) {
     console.error("Fetch error:", error);
     return { estimatedCalls: [] };
