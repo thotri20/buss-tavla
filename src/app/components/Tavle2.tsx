@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchDepartures } from "../utils/fetchDepartures2";
+import { fetchDepartures } from "../utils/fetchDeparturestwo";
 
 interface Departure {
   expectedDepartureTime: string;
