@@ -68,11 +68,11 @@ const Tavle = () => {
 
   return (
     <div className="rounded-lg bg-[#807b7b] w-full sm:w-[28rem]">
-      <h2 className="text-2xl font-bold mb-4 text-[#ffffff] text-center">
+      <h2 className="text-2xl font-bold mb-[2rem] text-[#ffffff] text-center">
         Hamar Katedralskole
       </h2>
       <div
-        className="mb-4 flex space-x-2 overflow-x-auto p-2 bg-white shadow-md rounded-lg w-full"
+        className="mb-[2.2rem] flex space-x-2 overflow-x-auto p-2 bg-white shadow-md rounded-lg w-full"
         style={{
           overflowX: "auto",
           whiteSpace: "nowrap",
