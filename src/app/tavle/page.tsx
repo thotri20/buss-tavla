@@ -20,7 +20,6 @@ export default function Home() {
 
   return (
     <div className="bg-black">
-      {/* Centered Content */}
       <div className="flex flex-col items-center justify-center min-h-screen p-6">
         <h1 className="text-4xl sm:text-5xl font-extrabold mb-6 text-[#ffffff]">
           Rømningsveier
@@ -64,7 +63,7 @@ export default function Home() {
           alt="pil"
           width={400}
           height={550}
-          className="absolute left-[-6rem] bottom-[-60px] rotate-180 
+          className="absolute left-[-6rem] bottom-[-60  px] rotate-180 
                      w-[22rem] sm:w-[30rem] h-auto"
         />
       </div>

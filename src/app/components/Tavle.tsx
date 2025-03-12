@@ -58,17 +58,14 @@ const Tavle = () => {
     };
   }, []);
 
-  // Finner alle stoppesteder
   const stopPlaces = [
     ...new Set(departures.map((dep) => dep.stopPlaceName)),
   ].filter(Boolean) as string[];
 
-  // Filtrer avganger basert på valgt stoppested
   const filteredDepartures = selectedStop
     ? departures.filter((dep) => dep.stopPlaceName === selectedStop)
     : departures;
 
-  // Begrens antallet avganger som vises til 15
   const limitedDepartures = filteredDepartures.slice(0, 15);
 
   return (
