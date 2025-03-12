@@ -10,6 +10,8 @@ export default class MyDocument extends Document {
             rel="stylesheet"
             href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
           />
+          {/* Legg til favicon */}
+          <link rel="icon" href="/images/favicon.png" />
         </Head>
         <body>
           <Main />

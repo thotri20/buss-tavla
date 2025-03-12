@@ -13,7 +13,22 @@ export default {
         foreground: "var(--foreground)",
       },
       fontFamily: {
-        roboto: ['"Roboto"', 'sans-serif'], // Legg til Roboto font
+        roboto: ['"Roboto"', 'sans-serif'],
+      },
+      animation: {
+        zoom: "zoomIn 1.5s ease-out",
+      },
+      keyframes: {
+        zoomIn: {
+          "0%": {
+            transform: "scale(0)",
+            opacity: "0",
+          },
+          "100%": {
+            transform: "scale(1)",
+            opacity: "1",
+          },
+        },
       },
     },
   },

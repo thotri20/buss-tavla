@@ -45,7 +45,11 @@ const Tavle = () => {
         );
         if (isMounted) setDepartures(sortedDepartures);
       } catch (err) {
-        if (isMounted) setError("Kunne ikke hente avganger");
+        if (isMounted) {
+          const errorMessage =
+            err instanceof Error ? err.message : "Kunne ikke hente avganger";
+          setError(errorMessage);
+        }
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -59,7 +63,9 @@ const Tavle = () => {
     };
   }, []);
 
-  const stopPlaces = [...new Set(departures.map((dep) => dep.stopPlaceName))].filter(Boolean) as string[];
+  const stopPlaces = [
+    ...new Set(departures.map((dep) => dep.stopPlaceName)),
+  ].filter(Boolean) as string[];
   const filteredDepartures = selectedStop
     ? departures.filter((dep) => dep.stopPlaceName === selectedStop)
     : departures;
@@ -73,11 +79,11 @@ const Tavle = () => {
         {stopPlaces.map((stop) => (
           <button
             key={stop}
-            onClick={() =>
-              setSelectedStop(selectedStop === stop ? null : stop)
-            }
+            onClick={() => setSelectedStop(selectedStop === stop ? null : stop)}
             className={`px-4 py-2 text-sm font-bold rounded-lg shadow-md transition-colors ${
-              selectedStop === stop ? "bg-blue-700 text-white" : "bg-gray-300 text-indigo-800"
+              selectedStop === stop
+                ? "bg-blue-700 text-white"
+                : "bg-gray-300 text-indigo-800"
             }`}
           >
             {stop}
@@ -93,15 +99,32 @@ const Tavle = () => {
           {filteredDepartures.map((dep, idx) => {
             const busNumber = dep.serviceJourney?.line?.publicCode || "??";
             const destination = dep.destinationDisplay.frontText || "Ukjent";
-            const departureTime = new Date(dep.expectedDepartureTime).toLocaleTimeString("nb-NO", { hour: "2-digit", minute: "2-digit" });
+            const departureTime = new Date(
+              dep.expectedDepartureTime
+            ).toLocaleTimeString("nb-NO", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
             return (
-              <li key={idx} className={`p-4 rounded-lg shadow-sm border-l-4 border-indigo-800 flex justify-between items-center ${getLineColor(busNumber)}`}>
+              <li
+                key={idx}
+                className={`p-4 rounded-lg shadow-sm border-l-4 border-indigo-800 flex justify-between items-center ${getLineColor(
+                  busNumber
+                )}`}
+              >
                 <div>
-                  <h2 className="font-semibold text-lg">🚌 {busNumber} → {destination}</h2>
+                  <h2 className="font-semibold text-lg">
+                    🚌 {busNumber} → {destination}
+                  </h2>
                   <div>
-                  <p className="text-sm font-bold text-white  p-2 ">{dep.stopPlaceName}</p></div>
+                    <p className="text-sm font-bold text-white  p-2 ">
+                      {dep.stopPlaceName}
+                    </p>
+                  </div>
                 </div>
-                <span className="font-semibold text-xl text-white bg-red-500 p-2 rounded-lg shadow-lg">{departureTime}</span>
+                <span className="font-semibold text-xl text-white bg-red-500 p-2 rounded-lg shadow-lg">
+                  {departureTime}
+                </span>
               </li>
             );
           })}
