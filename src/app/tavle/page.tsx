@@ -56,8 +56,8 @@ export default function Home() {
             </div>
           ) : (
             <div className="flex justify-center gap-4">
-              <Tavle2 />
-              <Tavle />
+              
+              <Tavle /><Tavle2 />
             </div>
           )}
         </div>
