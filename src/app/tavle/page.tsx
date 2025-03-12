@@ -4,6 +4,7 @@ import Tavle from "../components/Tavle";
 import Tavle2 from "../components/Tavle2";
 import Footer from "../components/footer";
 import Image from "next/image";
+import Navbar from "../components/Navbar";
 
 export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
@@ -20,8 +21,9 @@ export default function Home() {
 
   return (
     <div className="bg-black">
+      <Navbar />
       <div className="flex flex-col items-center justify-center min-h-screen p-6">
-        <h1 className="text-4xl sm:text-5xl font-extrabold mb-6 text-[#ffffff]">
+        <h1 className="text-4xl sm:text-5xl font-extrabold mb-6 mt-[4rem] text-[#ffffff]">
           Rømningsveier
         </h1>
 
@@ -31,7 +33,9 @@ export default function Home() {
               <div className="mb-4 flex gap-4">
                 <button
                   className={`px-4 py-2 rounded-lg font-bold ${
-                    activeTable === "Tavle" ? "bg-[#000080] text-white" : "bg-gray-300"
+                    activeTable === "Tavle"
+                      ? "bg-[#000080] text-white"
+                      : "bg-gray-300"
                   }`}
                   onClick={() => setActiveTable("Tavle")}
                 >
@@ -39,7 +43,9 @@ export default function Home() {
                 </button>
                 <button
                   className={`px-4 py-2 rounded-lg font-bold ${
-                    activeTable === "Tavle2" ? "bg-[#000080] text-white" : "bg-gray-300"
+                    activeTable === "Tavle2"
+                      ? "bg-[#000080] text-white"
+                      : "bg-gray-300"
                   }`}
                   onClick={() => setActiveTable("Tavle2")}
                 >
@@ -63,11 +69,10 @@ export default function Home() {
           alt="pil"
           width={400}
           height={550}
-          className="absolute left-[-6rem] bottom-[-60  px] rotate-180 
+          className="absolute left-[-6rem] bottom-[-40px] rotate-180 
                      w-[22rem] sm:w-[30rem] h-auto"
         />
       </div>
-
       <Footer />
     </div>
   );
