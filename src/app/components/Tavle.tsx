@@ -26,7 +26,6 @@ const Tavle = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
 
-  // Hent avganger
   useEffect(() => {
     let isMounted = true;
     const getDepartures = async () => {
@@ -120,10 +119,10 @@ const Tavle = () => {
                 )}`}
               >
                 <div className="flex flex-col min-w-0">
-                  <h2 className="font-semibold text-lg whitespace-normal">
+                  <h2 className="font-semibold text-[1.4rem] whitespace-normal">
                     🚌 {busNumber} → {destination}
                   </h2>
-                  <p className="text-sm font-bold text-black p-2">
+                  <p className="text-[1.3rem] font-bold text-black p-2">
                     {dep.stopPlaceName}
                   </p>
                 </div>
