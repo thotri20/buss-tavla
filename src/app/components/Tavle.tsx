@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { fetchDepartures } from "../utils/fetchDepartures";
 
@@ -28,6 +26,7 @@ const Tavle = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
 
+  // Hent avganger
   useEffect(() => {
     let isMounted = true;
     const getDepartures = async () => {
@@ -40,7 +39,7 @@ const Tavle = () => {
         }
         const sortedDepartures = data.estimatedCalls.sort(
           (a, b) =>
-            new Date(a.expectedDepartureTime).getTime() -
+            new Date(a.expectedDepartureTime).getTime() - 
             new Date(b.expectedDepartureTime).getTime()
         );
         if (isMounted) setDepartures(sortedDepartures);
@@ -59,12 +58,18 @@ const Tavle = () => {
     };
   }, []);
 
+  // Finner alle stoppesteder
   const stopPlaces = [
     ...new Set(departures.map((dep) => dep.stopPlaceName)),
   ].filter(Boolean) as string[];
+
+  // Filtrer avganger basert på valgt stoppested
   const filteredDepartures = selectedStop
     ? departures.filter((dep) => dep.stopPlaceName === selectedStop)
     : departures;
+
+  // Begrens antallet avganger som vises til 15
+  const limitedDepartures = filteredDepartures.slice(0, 15);
 
   return (
     <div className="rounded-lg bg-[#807b7b] w-full sm:w-[28rem]">
@@ -94,13 +99,14 @@ const Tavle = () => {
           </button>
         ))}
       </div>
+
       {loading ? (
         <p className="text-gray-500">Laster avganger...</p>
       ) : error ? (
         <p className="text-red-500">{error}</p>
-      ) : filteredDepartures.length > 0 ? (
+      ) : limitedDepartures.length > 0 ? (
         <ul className="space-y-4">
-          {filteredDepartures.map((dep, idx) => {
+          {limitedDepartures.map((dep, idx) => {
             const busNumber = dep.serviceJourney?.line?.publicCode || "??";
             const destination = dep.destinationDisplay.frontText || "Ukjent";
             const departureTime = new Date(

@@ -30,7 +30,7 @@ export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall
         (id) => `
       stop_${id}: stopPlace(id: "NSR:StopPlace:${id}") {
         name
-        estimatedCalls(numberOfDepartures: 10) {
+        estimatedCalls(numberOfDepartures: 15) {
           expectedDepartureTime
           destinationDisplay {
             frontText
