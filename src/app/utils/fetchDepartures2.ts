@@ -1,6 +1,5 @@
 const ENTUR_API = "https://api.entur.io/journey-planner/v3/graphql";
 
-// TypeScript-grensesnitt for avganger
 interface EstimatedCall {
   expectedDepartureTime: string;
   destinationDisplay: {
@@ -26,7 +25,7 @@ export const fetchDepartures = async (): Promise<{ estimatedCalls: EstimatedCall
         (id) => `
       stop_${id}: stopPlace(id: "NSR:StopPlace:${id}") {
         name
-        estimatedCalls(numberOfDepartures: 10) {
+        estimatedCalls(numberOfDepartures: 15) {
           expectedDepartureTime
           destinationDisplay {
             frontText
