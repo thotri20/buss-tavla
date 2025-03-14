@@ -108,7 +108,7 @@ const Tavle = () => {
             return (
               <li
                 key={idx}
-                className={`p-6 w-full sm:w-[28rem] rounded-xl  flex items-center justify-between ${getLineColor(
+                className={`p-6 w-full sm:w-[28rem] rounded-xl flex items-center justify-between ${getLineColor(
                   busNumber
                 )}`}
               >
@@ -116,7 +116,7 @@ const Tavle = () => {
                   <h2 className="font-semibold text-[1.4rem] whitespace-normal">
                     🚌 {busNumber} → {destination}
                   </h2>
-                  <p className="text-[1.13rem] font-bold text-black p-2">
+                  <p className="text-[1.13rem] mt-2 font-bold text-black p-2">
                     {dep.stopPlaceName}
                   </p>
                 </div>
