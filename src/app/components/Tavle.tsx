@@ -116,7 +116,7 @@ const Tavle = () => {
                   <h2 className="font-semibold text-[1.4rem] whitespace-normal">
                     🚌 {busNumber} → {destination}
                   </h2>
-                  <p className="text-[1.3rem] font-bold text-black p-2">
+                  <p className="text-[1.13rem] font-bold text-black p-2">
                     {dep.stopPlaceName}
                   </p>
                 </div>
