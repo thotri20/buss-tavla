@@ -72,13 +72,6 @@ const Tavle = () => {
         Hamar Katedralskole
       </h2>
       <div
-        className="mb-[2.2rem] flex space-x-2 overflow-x-auto p-2 bg-white shadow-md rounded-lg w-full"
-        style={{
-          overflowX: "auto",
-          whiteSpace: "nowrap",
-          scrollbarWidth: "none",
-          WebkitOverflowScrolling: "touch",
-        }}
       >
       </div>
       {loading ? (
@@ -99,7 +92,7 @@ const Tavle = () => {
             return (
               <li
                 key={idx}
-                className={`p-6 w-full sm:w-[28rem] rounded-xl  flex items-center justify-between ${getLineColor(
+                className={`p-6 w-full sm:w-[28rem] rounded-xl flex items-center mt-[5.5rem] justify-between ${getLineColor(
                   busNumber
                 )}`}
               >

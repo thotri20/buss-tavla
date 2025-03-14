@@ -27,7 +27,7 @@ export default function Home() {
           Rømningsveier
         </h1>
 
-        <div className="w-full sm:max-w-5xl rounded-2xl bg-[#807b7b] p-2">
+        <div className="w-full sm:max-w-5xl rounded-2xl bg-[#807b7b] text-black p-2">
           {isMobile ? (
             <div className="flex flex-col items-center">
               <div className="mb-4 flex gap-4">
@@ -69,7 +69,7 @@ export default function Home() {
           alt="pil"
           width={400}
           height={550}
-          className="absolute left-[-6rem] bottom-[-40px] rotate-180 
+          className="absolute left-[-6rem] bottom-[-50px] rotate-180 
                      w-[22rem] sm:w-[30rem] h-auto"
         />
       </div>
