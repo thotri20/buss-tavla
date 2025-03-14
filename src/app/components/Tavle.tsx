@@ -68,24 +68,18 @@ const Tavle = () => {
   const limitedDepartures = filteredDepartures.slice(0, 15);
 
   return (
-    <div className="rounded-lg bg-[#807b7b] w-full sm:w-[28rem]">
+    <div className="rounded-t-lg rounded-b-2xl bg-[#807b7b] w-full sm:w-[28rem]">
       <h2 className="text-2xl font-bold mb-4 text-[#ffffff] text-center">
         Andre holdeplasser
       </h2>
       <div
-        className="mb-4 flex space-x-2 overflow-x-auto p-2 bg-white shadow-md rounded-lg w-full"
-        style={{
-          overflowX: "auto",
-          whiteSpace: "nowrap",
-          scrollbarWidth: "none",
-          WebkitOverflowScrolling: "touch",
-        }}
+        className="mb-2 flex space-x-2 overflow-x-auto p-1 bg-white shadow-md rounded-lg w-full scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
       >
         {stopPlaces.map((stop) => (
           <button
             key={stop}
             onClick={() => setSelectedStop(selectedStop === stop ? null : stop)}
-            className={`px-4 py-2 text-sm font-bold rounded-lg shadow-md transition-colors ${
+            className={`px-3 py-1 text-xs font-bold rounded-lg shadow-md transition-colors ${
               selectedStop === stop
                 ? "bg-[#000080] text-white"
                 : "bg-gray-300 text-[#000080]"
@@ -122,7 +116,7 @@ const Tavle = () => {
                   <h2 className="font-semibold text-[1.4rem] whitespace-normal">
                     🚌 {busNumber} → {destination}
                   </h2>
-                  <p className="text-[1.3rem] font-bold text-black p-2">
+                  <p className="text-[1.13rem] font-bold text-black p-2">
                     {dep.stopPlaceName}
                   </p>
                 </div>
