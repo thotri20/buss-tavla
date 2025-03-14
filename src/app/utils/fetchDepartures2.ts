@@ -10,7 +10,10 @@ interface EstimatedCall {
       publicCode?: string;
     };
   };
-  stopPlace?: object;
+  stopPlace?: {
+    id: string;
+    name: string;
+  };
 }
 
 const stopPlaceIds = [
