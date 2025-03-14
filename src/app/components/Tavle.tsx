@@ -38,10 +38,11 @@ const Tavle = () => {
         }
         const sortedDepartures = data.estimatedCalls.sort(
           (a, b) =>
-            new Date(a.expectedDepartureTime).getTime() - 
+            new Date(a.expectedDepartureTime).getTime() -
             new Date(b.expectedDepartureTime).getTime()
         );
         if (isMounted) setDepartures(sortedDepartures);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
         if (isMounted) setError("Kunne ikke hente avganger");
       } finally {
