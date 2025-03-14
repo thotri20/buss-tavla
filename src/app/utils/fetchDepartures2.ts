@@ -11,6 +11,8 @@ interface EstimatedCall {
     };
   };
   stopPlace?: {
+    id: string;
+    name: string;
   };
 }
 

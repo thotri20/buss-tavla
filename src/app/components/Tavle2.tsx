@@ -26,7 +26,7 @@ const Tavle = () => {
   const [departures, setDepartures] = useState<Departure[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedStop, setSelectedStop] = useState<string | null>(null);
+  const [selectedStop] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -44,7 +44,7 @@ const Tavle = () => {
             new Date(b.expectedDepartureTime).getTime()
         );
         if (isMounted) setDepartures(sortedDepartures);
-      } catch (err) {
+      } catch {
         if (isMounted) setError("Kunne ikke hente avganger");
       } finally {
         if (isMounted) setLoading(false);
@@ -59,9 +59,6 @@ const Tavle = () => {
     };
   }, []);
 
-  const stopPlaces = [
-    ...new Set(departures.map((dep) => dep.stopPlaceName)),
-  ].filter(Boolean) as string[];
   const filteredDepartures = selectedStop
     ? departures.filter((dep) => dep.stopPlaceName === selectedStop)
     : departures;
