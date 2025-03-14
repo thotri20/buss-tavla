@@ -69,7 +69,7 @@ export default function Home() {
           alt="pil"
           width={400}
           height={550}
-          className="absolute left-[-6rem] bottom-[-50px] rotate-180 
+          className="absolute left-[-7rem] bottom-[-50px] rotate-180 
                      w-[22rem] sm:w-[30rem] h-auto"
         />
       </div>
