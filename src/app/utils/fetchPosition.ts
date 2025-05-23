@@ -8,6 +8,22 @@ export type Vehicle = {
   lastUpdated: string;
 };
 
+type GraphQLResponse = {
+  data: {
+    vehicles: {
+      line: {
+        lineRef: string;
+        publicCode: string;
+      };
+      lastUpdated: string;
+      location: {
+        latitude: number;
+        longitude: number;
+      };
+    }[];
+  };
+};
+
 const ENTUR_GRAPHQL_URL = 'https://api.entur.io/realtime/v1/graphql';
 const ALLOWED_LINES = ['21', '23', '27'];
 const CLIENT_NAME = 'fluktruter'; // Replace with your app's name or domain
@@ -44,15 +60,13 @@ export async function fetchPositions(): Promise<Vehicle[]> {
       throw new Error(`HTTP ${res.status} - ${errorText}`);
     }
 
-    const json = await res.json();
+    const json = await res.json() as GraphQLResponse;
 
     if (!json?.data?.vehicles) {
       throw new Error('Unexpected response: ' + JSON.stringify(json));
     }
 
-    const vehicles = json.data.vehicles as any[];
-
-    return vehicles
+    return json.data.vehicles
       .filter((v) => ALLOWED_LINES.includes(v.line?.publicCode))
       .map((v) => ({
         lineRef: v.line.lineRef,
@@ -63,6 +77,6 @@ export async function fetchPositions(): Promise<Vehicle[]> {
       }));
   } catch (error) {
     console.error('Failed to fetch vehicle positions:', error);
-    return []; // Return an empty list to avoid crashing
+    return [];
   }
 }
