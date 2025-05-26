@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 export type Vehicle = {
   lineRef: string;
   publicCode: string;
@@ -8,66 +6,42 @@ export type Vehicle = {
   lastUpdated: string;
 };
 
-type GraphQLResponse = {
-  data: {
-    vehicles: {
-      line: {
-        lineRef: string;
-        publicCode: string;
-      };
-      lastUpdated: string;
-      location: {
-        latitude: number;
-        longitude: number;
-      };
-    }[];
+type EnturVehicleResponse = {
+  line: {
+    lineRef: string;
+    publicCode: string;
+  };
+  lastUpdated: string;
+  location: {
+    latitude: number;
+    longitude: number;
   };
 };
 
-const ENTUR_GRAPHQL_URL = 'https://api.entur.io/realtime/v1/graphql';
+type GraphQLResponse = {
+  data: {
+    vehicles: EnturVehicleResponse[];
+  };
+};
+
 const ALLOWED_LINES = ['21', '23', '27'];
-const CLIENT_NAME = 'fluktruter'; // Replace with your app's name or domain
 
 export async function fetchPositions(): Promise<Vehicle[]> {
-  const query = `
-    {
-      vehicles(codespaceId: "INN") {
-        line {
-          lineRef
-          publicCode
-        }
-        lastUpdated
-        location {
-          latitude
-          longitude
-        }
-      }
-    }
-  `;
-
   try {
-    const res = await fetch(ENTUR_GRAPHQL_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'ET-Client-Name': CLIENT_NAME,
-      },
-      body: JSON.stringify({ query }),
-    });
-
+    const res = await fetch('/api/vehicles');
     if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`HTTP ${res.status} - ${errorText}`);
+      throw new Error(`HTTP ${res.status} - ${res.statusText}`);
     }
 
-    const json = await res.json() as GraphQLResponse;
+    const json: GraphQLResponse = await res.json();
 
-    if (!json?.data?.vehicles) {
-      throw new Error('Unexpected response: ' + JSON.stringify(json));
+    const vehicles = json?.data?.vehicles;
+    if (!vehicles || !Array.isArray(vehicles)) {
+      throw new Error('Uventet responsformat: ' + JSON.stringify(json));
     }
 
-    return json.data.vehicles
-      .filter((v) => ALLOWED_LINES.includes(v.line?.publicCode))
+    return vehicles
+      .filter((v) => ALLOWED_LINES.includes(v.line.publicCode))
       .map((v) => ({
         lineRef: v.line.lineRef,
         publicCode: v.line.publicCode,
@@ -76,7 +50,7 @@ export async function fetchPositions(): Promise<Vehicle[]> {
         lastUpdated: v.lastUpdated,
       }));
   } catch (error) {
-    console.error('Failed to fetch vehicle positions:', error);
+    console.error('Feil ved henting av posisjoner:', error);
     return [];
   }
 }

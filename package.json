@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@react-google-maps/api": "^2.20.6",
+    "cross-fetch": "^4.1.0",
     "gtfs-realtime-bindings": "^1.1.1",
     "leaflet": "^1.9.4",
     "mapbox-gl": "^3.12.0",

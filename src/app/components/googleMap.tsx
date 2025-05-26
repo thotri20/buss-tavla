@@ -1,15 +1,28 @@
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-import { useEffect, useState } from 'react';
-import { fetchPositions, Vehicle } from '../utils/fetchPosition';
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import { useEffect, useState } from "react";
+import { fetchPositions, Vehicle } from "../utils/fetchPosition";
 
 const containerStyle = {
-  width: '100%',
-  height: '600px',
+  width: "100vw",
+  height: "100vh",
 };
 
 const center = {
-    lat: 60.806,
-    lng: 11.053,
+  lat: 60.806,
+  lng: 11.053,
+};
+
+const options = {
+  streetViewControl: true,
+  fullscreenControl: true,
+  mapTypeControl: true,
+  styles: [
+    {
+      featureType: "poi",
+      elementType: "all",
+      stylers: [{ visibility: "off" }],
+    },
+  ],
 };
 
 export default function BusMapGoogle() {
@@ -19,33 +32,34 @@ export default function BusMapGoogle() {
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
 
-useEffect(() => {
-  const load = async () => {
-    const data = await fetchPositions();
-    setVehicles(data);
-  };
+  useEffect(() => {
+    const load = async () => {
+      const data = await fetchPositions();
+      setVehicles(data);
+    };
 
-  load();
-  const interval = setInterval(load, 15000); // every 15s
-  return () => clearInterval(interval);
-}, []);
+    load();
+    const interval = setInterval(load, 15000);
+    return () => clearInterval(interval);
+  }, []);
 
-  if (!isLoaded) return <p>Laster kart...</p>
+  if (!isLoaded) return null;
 
   return (
-    <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={16}>
-      {vehicles.map((bus) =>(
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={16}
+      options={options}
+    >
+      {vehicles.map((bus) => (
         <Marker
           key={bus.lineRef}
           position={{ lat: bus.latitude, lng: bus.longitude }}
           label={bus.publicCode}
-          title={`line ${bus.publicCode}`}
-          />
-          
+          title={`Linje ${bus.publicCode}`}
+        />
       ))}
-
     </GoogleMap>
-
-    
-  )
+  );
 }
