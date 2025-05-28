@@ -24,7 +24,25 @@ type GraphQLResponse = {
   };
 };
 
-const ALLOWED_LINES = ['21', '23', '27'];
+const CENTER_LAT = 60.807;
+const CENTER_LNG = 11.058;
+const RADIUS = 0.02; // ~2 km radius
+
+const ALLOWED_LINES = [
+  "B21", "B23", "B27",
+  "674", "612", "671", "650",
+  "637", "675", "646", "658",
+  "692", "684", "697"
+];
+
+function isInArea(lat: number, lng: number): boolean {
+  return (
+    lat >= CENTER_LAT - RADIUS &&
+    lat <= CENTER_LAT + RADIUS &&
+    lng >= CENTER_LNG - RADIUS &&
+    lng <= CENTER_LNG + RADIUS
+  );
+}
 
 export async function fetchPositions(): Promise<Vehicle[]> {
   try {
@@ -41,14 +59,16 @@ export async function fetchPositions(): Promise<Vehicle[]> {
     }
 
     return vehicles
-      .filter((v) => ALLOWED_LINES.includes(v.line.publicCode))
       .map((v) => ({
         lineRef: v.line.lineRef,
         publicCode: v.line.publicCode,
         latitude: v.location.latitude,
         longitude: v.location.longitude,
         lastUpdated: v.lastUpdated,
-      }));
+      }))
+      .filter((v) => 
+        ALLOWED_LINES.includes(v.publicCode) && isInArea(v.latitude, v.longitude)
+      );
   } catch (error) {
     console.error('Feil ved henting av posisjoner:', error);
     return [];
