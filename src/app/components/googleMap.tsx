@@ -13,7 +13,6 @@ const center = {
   lng: 11.053,
 };
 
-// Lys modus stil (kan være tom eller med f.eks. POI skjult)
 const lightModeStyle = [
   {
     featureType: "poi",
@@ -22,7 +21,6 @@ const lightModeStyle = [
   },
 ];
 
-// Mørk modus stil for Google Maps
 const darkModeStyle = [
   { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
   { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
@@ -104,7 +102,7 @@ const darkModeStyle = [
   },
 ];
 
-export default function BusMapGoogle() {
+export default function BusMapGoogle({ lineRef }: { lineRef: string }) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
   });
@@ -125,6 +123,10 @@ export default function BusMapGoogle() {
   }, []);
 
   if (!isLoaded) return null;
+
+  const filteredVehicles = vehicles.filter(
+    (bus) => bus.publicCode === lineRef
+  );
 
   const options = {
     streetViewControl: true,
@@ -148,7 +150,6 @@ export default function BusMapGoogle() {
           border: "none",
           borderRadius: "8px",
           cursor: "pointer",
-          userSelect: "none",
         }}
       >
         {darkMode ? "Lys modus" : "Mørk modus"}
@@ -160,22 +161,21 @@ export default function BusMapGoogle() {
         zoom={16}
         options={options}
       >
-        {vehicles.map((bus, index) => (
+        {filteredVehicles.map((bus, index) => (
           <AnimatedMarker
             key={`${bus.lineRef}-${bus.latitude}-${bus.longitude}-${index}`}
             position={{ lat: bus.latitude, lng: bus.longitude }}
-            label={undefined} // Fjernet label for å unngå svart tekst på bussikon
+            label={undefined}
             onClick={() => setSelectedBus(bus)}
           />
         ))}
+
         {selectedBus && window.google && (
           <InfoBox
-            position={
-              new window.google.maps.LatLng(
-                selectedBus.latitude,
-                selectedBus.longitude
-              )
-            }
+            position={new window.google.maps.LatLng(
+              selectedBus.latitude,
+              selectedBus.longitude
+            )}
             options={{ closeBoxURL: "", enableEventPropagation: true }}
           >
             <div
@@ -190,7 +190,6 @@ export default function BusMapGoogle() {
                   : "0 6px 15px rgba(0, 0, 0, 0.2)",
                 maxWidth: "240px",
                 border: darkMode ? "1px solid #555" : "1px solid #ccc",
-                userSelect: "none",
               }}
             >
               <div
@@ -199,13 +198,10 @@ export default function BusMapGoogle() {
                   textAlign: "right",
                   fontWeight: "bold",
                   fontSize: "22px",
-                  lineHeight: "22px",
                   marginBottom: "10px",
                   color: darkMode ? "#bbb" : "#444",
-                  userSelect: "none",
                 }}
                 onClick={() => setSelectedBus(null)}
-                aria-label="Close info box"
               >
                 ×
               </div>
@@ -215,7 +211,6 @@ export default function BusMapGoogle() {
                   fontSize: "20px",
                   fontWeight: "700",
                   color: darkMode ? "#90caf9" : "#1976d2",
-                  letterSpacing: "0.02em",
                 }}
               >
                 Buss {selectedBus.publicCode}
@@ -237,3 +232,4 @@ export default function BusMapGoogle() {
     </>
   );
 }
+  
