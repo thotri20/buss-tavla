@@ -27,5 +27,5 @@ body,
   padding: 0;
   height: 100%;
   width: 100%;
-  overflow: hidden; /* for å unngå scrollbars */
+  overflow: auto; /* for å unngå scrollbars */
 }
