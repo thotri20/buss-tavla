@@ -126,13 +126,13 @@ const Tavle = () => {
       {/* Info Popup Modal */}
       {selectedDeparture && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+          <div className="bg-[#B8C6E0] p-6 rounded-lg max-w-md w-full">
             <h2 className="text-xl font-bold mb-2">
               Linje {selectedDeparture.serviceJourney?.line?.publicCode || "??"}
             </h2>
             <p className="mb-4">🚏 {selectedDeparture.stopPlaceName}</p>
             <button
-              className="bg-blue-600 text-white px-4 py-2 rounded mr-2"
+              className="bg-[#000080] text-white px-4 py-2 rounded mr-2"
               onClick={() => setShowMap(true)}
             >
               Vis på kart
