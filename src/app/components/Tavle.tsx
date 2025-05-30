@@ -30,7 +30,6 @@ const Tavle = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
   const [selectedDeparture, setSelectedDeparture] = useState<Departure | null>(null);
-  const [showMap, setShowMap] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -98,6 +97,7 @@ const Tavle = () => {
               hour: "2-digit",
               minute: "2-digit",
             });
+
             return (
               <li
                 key={idx}
@@ -108,9 +108,10 @@ const Tavle = () => {
                   <h2 className="font-semibold text-[1.3rem] whitespace-normal">
                     🚌 {busNumber} → {destination}
                   </h2>
-                  <p className="text-[1.13rem] mt-2 font-bold text-black p-2">
-                    {dep.stopPlaceName}
-                  </p>
+                  <div className="text-[1.13rem] mt-2 font-bold text-black p-2">
+                    <p>{dep.stopPlaceName}</p>
+                    <p className="flex text-[14px] font-light">Trykk for kart</p>
+                  </div>
                 </div>
                 <span className="font-semibold text-xl text-white bg-[#000080] px-3 py-1 rounded-lg shadow-lg ml-auto whitespace-nowrap">
                   {departureTime}
@@ -123,49 +124,25 @@ const Tavle = () => {
         <p className="text-gray-500 text-center">Ingen avganger tilgjengelig</p>
       )}
 
-      {/* Info Popup Modal */}
+      {/* Map Popup */}
       {selectedDeparture && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
-          <div className="bg-[#B8C6E0] p-6 rounded-lg max-w-md w-full">
-            <h2 className="text-xl font-bold mb-2">
-              Linje {selectedDeparture.serviceJourney?.line?.publicCode || "??"}
-            </h2>
-            <p className="mb-4">🚏 {selectedDeparture.stopPlaceName}</p>
+        <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center">
+          <div className="bg-white rounded-lg p-4 max-w-4xl w-full h-[90vh] relative flex flex-col">
             <button
-              className="bg-[#000080] text-white px-4 py-2 rounded mr-2"
-              onClick={() => setShowMap(true)}
-            >
-              Vis på kart
-            </button>
-            <button
-              className="bg-gray-400 text-black px-4 py-2 rounded"
+              className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded z-10"
               onClick={() => setSelectedDeparture(null)}
             >
               Lukk
             </button>
+
+            <div className="flex-1 overflow-hidden rounded-md">
+              <div className="h-full w-full">
+                <BusMapGoogle lineRef={selectedDeparture.serviceJourney?.line?.publicCode || ""} />
+              </div>
+            </div>
           </div>
         </div>
       )}
-
-      {/* Map Modal (on top of everything) */}
-      {showMap && selectedDeparture && (
-  <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center">
-    <div className="bg-white rounded-lg p-4 max-w-4xl w-full h-[90vh] relative flex flex-col">
-      <button
-        className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded z-10"
-        onClick={() => setShowMap(false)}
-      >
-        Lukk kart
-      </button>
-
-      <div className="flex-1 overflow-hidden rounded-md">
-        <div className="h-full w-full">
-          <BusMapGoogle lineRef={selectedDeparture.serviceJourney?.line?.publicCode || ""} />
-        </div>
-      </div>
-    </div>
-  </div>
-)}
     </div>
   );
 };
