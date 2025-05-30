@@ -13,12 +13,9 @@ const center = {
   lng: 11.053,
 };
 
+// Light and dark styles
 const lightModeStyle = [
-  {
-    featureType: "poi",
-    elementType: "all",
-    stylers: [{ visibility: "off" }],
-  },
+  { featureType: "poi", elementType: "all", stylers: [{ visibility: "off" }] },
 ];
 
 const darkModeStyle = [
@@ -102,7 +99,11 @@ const darkModeStyle = [
   },
 ];
 
-export default function BusMapGoogle({ lineRef }: { lineRef: string }) {
+type Props = {
+  lineRef?: string; // Optional filtering
+};
+
+export default function BusMapGoogle({ lineRef }: Props) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
   });
@@ -124,9 +125,9 @@ export default function BusMapGoogle({ lineRef }: { lineRef: string }) {
 
   if (!isLoaded) return null;
 
-  const filteredVehicles = vehicles.filter(
-    (bus) => bus.publicCode === lineRef
-  );
+  const filteredVehicles = lineRef
+    ? vehicles.filter((bus) => bus.publicCode === lineRef)
+    : vehicles;
 
   const options = {
     streetViewControl: true,
@@ -141,6 +142,7 @@ export default function BusMapGoogle({ lineRef }: { lineRef: string }) {
         onClick={() => setDarkMode(!darkMode)}
         style={{
           position: "absolute",
+          marginTop: 50,
           zIndex: 10,
           top: 10,
           right: 10,
@@ -150,6 +152,7 @@ export default function BusMapGoogle({ lineRef }: { lineRef: string }) {
           border: "none",
           borderRadius: "8px",
           cursor: "pointer",
+          userSelect: "none",
         }}
       >
         {darkMode ? "Lys modus" : "Mørk modus"}
@@ -190,6 +193,7 @@ export default function BusMapGoogle({ lineRef }: { lineRef: string }) {
                   : "0 6px 15px rgba(0, 0, 0, 0.2)",
                 maxWidth: "240px",
                 border: darkMode ? "1px solid #555" : "1px solid #ccc",
+                userSelect: "none",
               }}
             >
               <div
@@ -198,10 +202,12 @@ export default function BusMapGoogle({ lineRef }: { lineRef: string }) {
                   textAlign: "right",
                   fontWeight: "bold",
                   fontSize: "22px",
+                  lineHeight: "22px",
                   marginBottom: "10px",
                   color: darkMode ? "#bbb" : "#444",
                 }}
                 onClick={() => setSelectedBus(null)}
+                aria-label="Close info box"
               >
                 ×
               </div>
@@ -211,6 +217,7 @@ export default function BusMapGoogle({ lineRef }: { lineRef: string }) {
                   fontSize: "20px",
                   fontWeight: "700",
                   color: darkMode ? "#90caf9" : "#1976d2",
+                  letterSpacing: "0.02em",
                 }}
               >
                 Buss {selectedBus.publicCode}
@@ -232,4 +239,3 @@ export default function BusMapGoogle({ lineRef }: { lineRef: string }) {
     </>
   );
 }
-  
